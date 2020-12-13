@@ -18,7 +18,7 @@ export const Store = async(req, res, next) => {
 export const DeleteById = async(req, res, next) => {
     try {
         const result = await user.deleteUser(req.params.id)
-        res.status(200).json({status: '200', result: "ggg"})
+        res.status(200).json({status: '200', result: "User deleted successfuly"})
     } catch (error) {
        next(error) 
     }

@@ -2,114 +2,165 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>NodeJS Mongoose CRUD App</title>
+    <title>Currnt CRUD App</title>
+
     <style>
-    *{
-    box-sizing: border-box;
-    }
-    body{
-        padding: 50px;
-        margin: 0;
-        background: #f7f7f7;
-        font-family: sans-serif;
-    }
-    .container{
-        background-color: #ffffff;
-        padding: 10px;
-        margin: 0 auto;
-        max-width: 600px;
-        border: 1px solid #cccccc;
-    }
-    .insert_post input[type='text'],
-    .insert_post textarea{
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #dddddd;
-        font-family: sans-serif;
-        margin-bottom: 5px;
-        font-size: 16px;
-        resize: vertical;
-    }
-    .insert_post label{
-        font-weight: bold;
-    }
-    h1,h2{
-        text-align: center;
-        text-transform: uppercase;
-    }
-
-    .insert_post input[type='text']:focus,
-    .insert_post textarea:focus{
-        outline: none;
-        border: 1px solid #cccccc;
-    }
-    .insert_post input[type='submit']{
-        padding: 10px 20px;
+      .sidenav{
+        transition: transform .8s;
+      }
+      .active{
+        transform: translateX(0%);
+      }
+      .form__container{
+        padding: 12px;
+      }
+      .cursor {
         cursor: pointer;
-        background-color: #333333;
-        color: #ffffff;
-        outline: none;
-        border: 1px solid rgba(0,0,0,.1);
-    }
-    .insert_post input[type='submit']:hover{
-        background-color: #ffffff;
-        color: #222222;
-        border: 1px solid #333333;
-    }
-
-    /* SINGLE POST STYLING */
-    .single_post{
-        padding: 10px 0;
-        border-bottom: 1px solid #dddddd;
-
-    }
-
-    .single_post .post_title{
-        margin: 0 0 5px 0;
-        padding: 0;
-    }
-    .single_post .post_content{
-        margin: 5px 0;
-        padding: 0;
-    }
-
-    .single_post .post_info{
-        font-size: 14px;
-    }
-    .single_post .post_date{
-        color: #888888;
-        font-style: italic;
-    }
-    .post_actions{
-        padding-top: 5px;
-    }
-    .post_edit_btn,
-    .post_delete_btn{
-        border:1px solid rgba(0,0,0,.1);
-        outline: none;
-        text-decoration: none;
-        padding: 7px 15px;
-        display:inline-block;
-    }
-    .post_edit_btn{
-        background-color: #2c9f45;
-        color: #ffffff;
-    }
-    .post_delete_btn{
-        background-color: #ff4c4c;
-        color: #ffffff;
-    }
+      }
+      .btn__container{
+        display: flex;
+        justify-content: space-evenly;
+        margin: 22px 0;
+      }
     </style>
 </head>
 <body>
+  <div id="slide-out" class="sidenav">
+    <form class="form__container" id="form-creator">
+      <div class="input-field">
+        <input id="first_name" type="text" name="firstName">
+        <label for="first_name">First Name</label>
+      </div>
+      <div class="input-field">
+        <input id="last_name" type="text" name="lastName">
+        <label for="last_name">Last Name</label>
+      </div>
+      <div class="input-date">
+        <input type="date" id="date" class="date" name="birthday">
+      </div>
+      <div class="input-field">
+        <input type="password" class="password" name="password">
+        <label for="password">Password</label>
+      </div>
+      <div>
+        <select style="display: block;" name='genderId' id="gender">
+          <option value="">Gender</option>
+          <option value="1">Female</option>
+          <option value="2">Male</option>
+        </select>
+      </div>
+      <div class="btn__container">
+        <button class="btn waves-effect waves-light btn-save" type="submit" id="btn-save" >Save</button>
+        <button class="btn waves-effect waves-light indigo lighten-5 grey-text text-darken-4" id="btn-cancel" >Cancel</button>
+      </div>
+    </form>
+  </div>
+    <div class="container valign-wrapper" style="margin-top: 22px">
+      <div class="row">
+        <div class="col s12">
+          <button class="btn waves-effect waves-light" id="btn-sidebar">Create</button>
+        </div>
+      </div>
+    </div>
     <div class="container">
         {% for user in users %}
-            <div class="single_post">
-                <p class="post_content">{{user.first_name }} {{user.last_name}}</p>
+            <div class="row"  id="userData">
+              <div class="col s12">
+                <div class="card" data-userid={{user.user_id}}>
+                  <div class="card-content">
+                    <span class="card-title" style="text-transform: capitalize">{{user.first_name}} {{user.last_name}}</span>
+                    <p>{{user.birthday}}</p>
+                  </div>
+                  <div class="card-action">
+                    <a id="remove" class="cursor" data-userid={{user.user_id}}>Remove</a>
+                    <a id="update" class="cursor" data-user={{user.user_id}},{{user.first_name}},{{user.last_name}},{{user.birthday}},{{user.gender_id}}>
+                      Update
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
         {% endfor %}
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      const $sidebar = document.querySelector('.sidenav');
+      const $btnCreate = document.getElementById('btn-sidebar')
+      const $btnCancel = document.getElementById('btn-cancel')
+      const $form = document.getElementById('form-creator')
+      const $removeElements = document.querySelectorAll('#remove')
+      const $updateElements = document.querySelectorAll('#update')
+      let updateUserId = ''
+
+      // CRUD Actions
+      const remove = (evt) => {
+        const userId = evt.target.getAttribute('data-userId')
+        axios.delete(`/users/${userId}`).then( _ => window.location.reload() )
+      }
+
+      const update = (evt) => {
+        openDrawer()
+        const $pwd = document.querySelector('.password')
+        const $fistName = document.querySelector('#first_name')
+        const $lastName = document.querySelector('#last_name')
+        const $birthday = document.querySelector('#date')
+        const $gender = document.querySelector('#gender')
+        const $parent = $pwd.parentElement
+        const user = evt.target.getAttribute('data-user').split(',')
+        const date = user[3].split('-').reverse().join('-')
+        updateUserId = user[0]
+
+        $parent.style.display = 'none'
+        $fistName.form.setAttribute('data-action', 'update')
+        $fistName.focus()
+        $fistName.value = user[1],
+        $lastName.focus()
+        $lastName.value = user[2],
+        $birthday.value = date,
+        $gender.value = user[4]
+      }
+
+      const updateAction = (userId, data) => axios.put(`/users/${userId}`, data).then(_ =>  console.log(_))
+      
+      const create = (data) => {
+        axios.post(`/users`, data).then( _ => window.location.reload())
+      }
+
+      const openDrawer = (evt) => $sidebar.classList.toggle('active')
+      
+      $btnCreate.addEventListener('click', (evt) => $sidebar.classList.toggle('active') )
+      $btnCancel.addEventListener('click', (evt) => {
+        const $pwd = document.querySelector('.password')
+        const $parent = $pwd.parentElement
+        $parent.style.display = 'block'
+        $sidebar.classList.toggle('active')
+      })
+      $form.addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const form = new FormData(evt.target)
+        const action = evt.target.getAttribute('data-action')
+        const jsonData = {}
+        for(let key of form.keys()){
+          if(!form.get(key)) {
+            if(action && key == 'password') continue
+
+            return alert('All fields are required')
+          }
+          jsonData[key] = form.get(key)
+        }
+
+        !action ? create(jsonData) : updateAction(updateUserId, jsonData)
+      })
+
+      $removeElements.forEach($el => $el.addEventListener('click', remove) )
+      $updateElements.forEach($el => $el.addEventListener('click', update) )
+      
+    </script>
 </body>
 </html>

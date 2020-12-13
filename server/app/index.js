@@ -14,5 +14,4 @@ const Init = async () => {
         `🖥  server run on localhost:${Server.get('port')}`
     )
 }
-
 Init()
