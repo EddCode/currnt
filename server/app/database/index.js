@@ -2,7 +2,7 @@ import Sequelize from 'sequelize'
 import UserModel from './entities/User'
 import GenderModel from './entities/Gender'
 
-import {db} from '../config'
+import { db } from '../config'
 
 const models = {}
 
@@ -10,7 +10,7 @@ const options = {
   host: db.host,
   dialect: db.dialect,
   define: {
-	underscored: true
+    underscored: true
   }
 }
 
@@ -20,7 +20,8 @@ const sequelize = new Sequelize(db.name, db.user, db.pwd, options)
 const User = UserModel(sequelize, Sequelize.DataTypes)
 const Gender = GenderModel(sequelize, Sequelize.DataTypes)
 
-Gender.hasMany(User, {foreignKey: {
+Gender.hasMany(User, {
+  foreignKey: {
     name: 'gender_id',
     as: 'gender',
     allowNull: false
@@ -28,7 +29,6 @@ Gender.hasMany(User, {foreignKey: {
 })
 
 models.sequelize = sequelize
-
 
 export default models
 

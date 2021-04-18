@@ -1,17 +1,23 @@
-import Server from './server'
-import models from './database'
-import { Gender } from './database'
+import App from './server'
+import models, { Gender } from './database'
 
 // Run server
-const Init = async () => { 
-    await Server.listen(Server.get('port'))
-    await models.sequelize.sync()
-    Gender.bulkCreate([
-        {name: 'Female'},
-        {name: 'Male'}
-    ])
-    console.log(
-        `🖥  server run on localhost:${Server.get('port')}`
-    )
+const Init = async () => {
+  const server = await App.listen(App.get('port'))
+  await models.sequelize.sync()
+
+  Gender.bulkCreate([
+    { name: 'Female' },
+    { name: 'Male' }
+  ])
+
+  console.log(
+        `🖥  server run on localhost:${App.get('port')}`
+  )
+
+  return server
 }
-Init()
+
+const server = Init()
+
+export { server, App }
