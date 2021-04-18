@@ -2,9 +2,11 @@ import Sequelize from 'sequelize'
 import UserModel from './entities/User'
 import GenderModel from './entities/Gender'
 
-import { db } from '../config'
+import config, { env } from '../config'
 
 const models = {}
+
+const db = config[env]
 
 const options = {
   host: db.host,
